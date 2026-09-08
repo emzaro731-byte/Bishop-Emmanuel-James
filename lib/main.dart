@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'auth_page.dart';
+import 'supabase_config.dart';
 
-void main() => runApp(const BishopPayApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SupabaseConfig.initialize();
+  runApp(const BishopPayApp());
+}
 
 class BishopPayApp extends StatelessWidget {
   const BishopPayApp({super.key});
@@ -17,13 +23,13 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Bishop Pay')),
+    appBar: AppBar(title: const Text('Bishop Pay'), actions: [
+      IconButton(icon: const Icon(Icons.person_outline), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthPage()))),
+    ]),
     body: ListView(padding: const EdgeInsets.all(20), children: [
       Card(child: Padding(padding: const EdgeInsets.all(20), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Available Balance'),
-        const SizedBox(height: 8),
-        Text('₦0.00', style: Theme.of(context).textTheme.displaySmall),
-        const SizedBox(height: 12),
+        const Text('Available Balance'), const SizedBox(height: 8),
+        Text('₦0.00', style: Theme.of(context).textTheme.displaySmall), const SizedBox(height: 12),
         FilledButton(onPressed: () {}, child: const Text('Add Money')),
       ]))),
       const SizedBox(height: 16),
