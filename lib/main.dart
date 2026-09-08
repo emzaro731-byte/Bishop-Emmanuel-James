@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'add_money_page.dart';
 import 'auth_page.dart';
 import 'profile_page.dart';
 import 'send_money_page.dart';
@@ -75,10 +76,16 @@ class _HomeShellState extends State<HomeShell> {
     await refresh();
   }
 
+  Future<void> addMoney() async {
+    if (!signedIn) { await openAuth(); return; }
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const AddMoneyPage()));
+    await refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     final pages = <Widget>[
-      _HomeTab(balance: balance, loading: loading, signedIn: signedIn, transactions: transactions, onSend: sendMoney, onRefresh: refresh, onAuth: openAuth),
+      _HomeTab(balance: balance, loading: loading, signedIn: signedIn, transactions: transactions, onSend: sendMoney, onAddMoney: addMoney, onRefresh: refresh, onAuth: openAuth),
       const ServicesPage(),
       _ActivityTab(transactions: transactions),
       const ProfilePage(),
@@ -103,9 +110,9 @@ class _HomeTab extends StatelessWidget {
   final int balance;
   final bool loading, signedIn;
   final List<Map<String, dynamic>> transactions;
-  final VoidCallback onSend, onAuth;
+  final VoidCallback onSend, onAuth, onAddMoney;
   final Future<void> Function() onRefresh;
-  const _HomeTab({required this.balance, required this.loading, required this.signedIn, required this.transactions, required this.onSend, required this.onRefresh, required this.onAuth});
+  const _HomeTab({required this.balance, required this.loading, required this.signedIn, required this.transactions, required this.onSend, required this.onAddMoney, required this.onRefresh, required this.onAuth});
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -133,7 +140,7 @@ class _HomeTab extends StatelessWidget {
             const SizedBox(height: 4),
             Text(loading ? '₦••••••' : formatNaira(balance), style: const TextStyle(color: Colors.white, fontSize: 34, fontWeight: FontWeight.w800)),
             const SizedBox(height: 18),
-            SizedBox(width: double.infinity, child: FilledButton.tonalIcon(onPressed: () => _addMoney(context), icon: const Icon(Icons.add), label: const Text('Add Money'))),
+            SizedBox(width: double.infinity, child: FilledButton.tonalIcon(onPressed: onAddMoney, icon: const Icon(Icons.add), label: const Text('Add Money'))),
           ]),
         ),
         const SizedBox(height: 22),
@@ -146,7 +153,8 @@ class _HomeTab extends StatelessWidget {
         Row(children: [
           Expanded(child: _ActionTile(icon: Icons.receipt_long_rounded, label: 'Bills', onTap: () => _soon(context, 'Bills'))),
           const SizedBox(width: 12),
-          Expanded(child: _ActionTile(icon: Icons.qr_code_rounded, label: 'QR Pay', onTap: () => _soon(context, 'QR Pay'))),
+          Expanded(child: _ActionTile(icon: Icons.qr_code_rounded, label: 'QR Pay', onTap: () => _soon(context, 'QR Pay')),
+          ),
         ]),
         const SizedBox(height: 28),
         Text('Recent activity', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
@@ -158,7 +166,6 @@ class _HomeTab extends StatelessWidget {
     ),
   );
 
-  void _addMoney(BuildContext context) => showDialog<void>(context: context, builder: (_) => const AlertDialog(title: Text('Add Money'), content: Text('Real deposits will be enabled after a licensed payment provider and webhook flow are configured.')));
   void _soon(BuildContext context, String name) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$name will be enabled after provider integration.')));
 }
 
