@@ -36,32 +36,18 @@ begin
   where reference = p_reference
   for update;
 
-  if not found then
-    raise exception 'deposit_not_found';
-  end if;
-
-  if d.amount_kobo <> p_amount_kobo or d.currency <> 'NGN' then
-    raise exception 'deposit_amount_mismatch';
-  end if;
-
-  if d.status = 'successful' then
-    return false;
-  end if;
+  if not found then raise exception 'deposit_not_found'; end if;
+  if d.amount_kobo <> p_amount_kobo or d.currency <> 'NGN' then raise exception 'deposit_amount_mismatch'; end if;
+  if d.status = 'successful' then return false; end if;
 
   update public.deposit_intents
-  set status = 'successful',
-      provider_transaction_id = p_provider_transaction_id,
-      updated_at = now()
+  set status = 'successful', provider_transaction_id = p_provider_transaction_id, updated_at = now()
   where id = d.id;
 
   update public.wallets
-  set balance_kobo = balance_kobo + d.amount_kobo,
-      updated_at = now()
+  set balance_kobo = balance_kobo + d.amount_kobo, updated_at = now()
   where user_id = d.user_id;
-
-  if not found then
-    raise exception 'wallet_not_found';
-  end if;
+  if not found then raise exception 'wallet_not_found'; end if;
 
   insert into public.transactions(user_id, type, amount_kobo, currency, status, reference, description)
   values (d.user_id, 'credit', d.amount_kobo, 'NGN', 'successful', d.reference, 'Flutterwave wallet deposit')
@@ -70,3 +56,6 @@ begin
   return true;
 end;
 $$;
+
+revoke all on function public.apply_verified_deposit(text, text, bigint) from public, anon, authenticated;
+grant execute on function public.apply_verified_deposit(text, text, bigint) to service_role;
