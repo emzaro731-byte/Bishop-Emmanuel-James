@@ -1,7 +1,7 @@
 name: bishop_pay
 description: A modern Flutter fintech starter app.
 publish_to: 'none'
-version: 1.1.0+3
+version: 1.1.0+4
 environment:
   sdk: '>=3.3.0 <4.0.0'
 dependencies:
@@ -10,6 +10,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.15.0
   local_auth: ^2.3.0
+  url_launcher: ^6.3.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
