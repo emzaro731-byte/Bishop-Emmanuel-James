@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_page.dart';
+import 'security_page.dart';
 import 'supabase_config.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -22,7 +23,7 @@ class ProfilePage extends StatelessWidget {
         ]))),
         const SizedBox(height: 14),
         _Item(Icons.verified_user_outlined, 'Identity verification', 'KYC status and account limits', () => _info(context, 'KYC', 'Identity verification will be connected to the licensed provider/compliance flow.')),
-        _Item(Icons.lock_outline, 'PIN & biometrics', 'Protect sensitive actions', () => _info(context, 'Security', 'Transaction PIN and biometric confirmation are planned for the secure payment flow.')),
+        _Item(Icons.shield_outlined, 'Security center', 'Biometrics and transaction protection', () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SecurityPage()))),
         _Item(Icons.notifications_none_rounded, 'Notifications', 'Payment and security alerts', () => _info(context, 'Notifications', 'Push and transaction notifications will be enabled with the backend notification service.')),
         _Item(Icons.help_outline, 'Help & support', 'Get help with Bishop Pay', () => _info(context, 'Support', 'Support centre placeholder.')),
         if (user == null) FilledButton.icon(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AuthPage())), icon: const Icon(Icons.login), label: const Text('Sign in')),
