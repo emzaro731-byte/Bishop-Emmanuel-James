@@ -33,6 +33,9 @@ Deno.serve(withSupabase({ auth: 'user' }, async (req, ctx) => {
     })
     if (insertError) throw new Error(`Could not create deposit intent: ${insertError.message}`)
 
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')
+    if (!supabaseUrl) throw new Error('Supabase URL is not configured')
+
     const response = await fetch(FLW_URL, {
       method: 'POST',
       headers: {
@@ -43,7 +46,7 @@ Deno.serve(withSupabase({ auth: 'user' }, async (req, ctx) => {
         tx_ref: reference,
         amount: amountNaira,
         currency: 'NGN',
-        redirect_url: 'https://bishop-pay-webhook.invalid/flutterwave/return',
+        redirect_url: `${supabaseUrl}/functions/v1/provider-webhook`,
         customer: {
           email,
           name: user.user_metadata?.full_name ?? 'Bishop Pay User',
