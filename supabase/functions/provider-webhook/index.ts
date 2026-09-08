@@ -11,6 +11,7 @@ function json(data: unknown, status = 200) {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'GET') return json({ service: 'Bishop Pay payment return', message: 'Payment processing is verified server-side. You can return to the Bishop Pay app.' })
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405)
   if (!FLW_SECRET_KEY || !FLW_WEBHOOK_SECRET_HASH) return json({ error: 'Webhook secrets are not configured' }, 503)
 
